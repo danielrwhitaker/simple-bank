@@ -15,11 +15,31 @@ public class AccountService {
     public Account createAccount(String name, double balance) {
         int id = nextId++;
         Account account = new Account(id, name, balance);
-        accounts.put(id, account);
+        accounts.put(account.getId(), account);
         return account;
     }
 
      public Account getAccount(int id) {
         return accounts.get(id);
+    }
+
+    public Account withdraw(int id, double amount) {
+        Account account = accounts.get(id);
+
+        if(account == null) {
+            throw new IllegalArgumentException("Account not found");
+        }
+
+        if(amount<=0) {
+            throw new IllegalArgumentException("Cannot withdraw amount <= $0");
+        }
+
+        if(account.getBalance()<amount) {
+            throw new IllegalArgumentException("Insufficient funds");
+        }
+
+        account.setBalance(account.getBalance()-amount);
+
+        return account;
     }
 }
