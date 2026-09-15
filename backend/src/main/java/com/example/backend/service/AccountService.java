@@ -42,4 +42,20 @@ public class AccountService {
 
         return account;
     }
+
+    public Account deposit(int id, double amount) {
+        Account account = accounts.get(id);
+
+        if(account == null) {
+            throw new IllegalArgumentException("Account not found");
+        }
+
+        if(amount<=0) {
+            throw new IllegalArgumentException("Cannot deposit amount <= $0");
+        }
+
+        account.setBalance(account.getBalance()+amount);
+
+        return account;
+    }
 }

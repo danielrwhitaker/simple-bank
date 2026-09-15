@@ -3,6 +3,7 @@ package com.example.backend.controller;
 import com.example.backend.model.Account;
 import com.example.backend.model.CreateAccountRequest;
 import com.example.backend.model.CreateWithdrawRequest;
+import com.example.backend.model.CreateDepositRequest;
 import com.example.backend.service.AccountService;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,13 @@ public class AccountController {
     public Account withdraw(@PathVariable int id, @RequestBody CreateWithdrawRequest request) {
         return accountService.withdraw(id, request.getAmount());
     }
+
+    @PostMapping("/{id}/deposit")
+    public Account deposit(@PathVariable int id, @RequestBody CreateWithdrawRequest request) {
+        return accountService.deposit(id, request.getAmount());
+    }
+
+
     //Read part of CRUD
     @GetMapping("/{id}")
     public Account getAccount(@PathVariable int id) {
