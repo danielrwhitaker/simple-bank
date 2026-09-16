@@ -1,6 +1,7 @@
 package com.example.backend.service;
 //this AccountService is used to create Accounts with a hashmap
 //hash map because no database is used yet
+import com.example.backend.dto.LoginRequest;
 import com.example.backend.dto.RegistrationRequest;
 import com.example.backend.dto.UserResponse;
 import com.example.backend.model.UpdateUserRequest;
@@ -11,8 +12,10 @@ import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.TransactionRepository;
 import com.example.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -40,6 +43,24 @@ public class UserService {
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    public User authenticate(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Invalid email or password"
+                ));
+
+        if(!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Invalid email or password"
+            );
+        }
+
+        return user;
+
     }
 
     public UserResponse createUser(RegistrationRequest request) {
