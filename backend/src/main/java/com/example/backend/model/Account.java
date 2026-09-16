@@ -1,11 +1,10 @@
 package com.example.backend.model;
 
 import java.math.BigDecimal;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
+
 //This is the Account class, which is defining Accounts to be built in accountservice
 @Entity
 @Table(name="accounts")
@@ -15,37 +14,53 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private String name;
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    private String type;
     private BigDecimal balance;
 
     public Account() {
     }
-
-    public Account(int id, String name, BigDecimal balance) {
+    /*
+    public Account(User user, int id, String name, String type, BigDecimal balance) {
+        this.user = user;
         this.id = id;
         this.name = name;
+        this.type = type;
+        this.balance = balance;
+    }*/
+
+    public Account(User user, String type, BigDecimal balance) {
+        this.user = user;
+        this.type = type;
         this.balance = balance;
     }
-
-    public Account(String name, BigDecimal balance) {
+    /*
+    public Account(String name, String type, BigDecimal balance) {
         this.name = name;
+        this.type = type;
         this.balance = balance;
+    }*/
+
+    public User getUser() {
+        return user;
     }
 
     public int getId() {
         return id;
     }
-
-    public String getName() {
-        return name;
-    }
+    
+    public String getType() {return type; }
 
     public BigDecimal getBalance() {
         return balance;
     }
-
-    public void setName(String name) {
-        this.name = name;
+    
+    public void setType(String type) {
+        this.type = type;
     }
 
     public void setBalance(BigDecimal balance) {
@@ -54,6 +69,6 @@ public class Account {
 
     @Override
     public String toString() {
-        return "Account [id=" + id + ", name=" + name + ", balance=" + balance + "]";
+        return "Account [id=" + id + ", user id=" + user.getId() + ", type=" + type + ", balance=" + balance + "]";
     }
 }

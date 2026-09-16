@@ -3,8 +3,10 @@ package com.example.backend.service;
 //hash map because no database is used yet
 import com.example.backend.model.Account;
 import com.example.backend.model.Transaction;
+import com.example.backend.model.User;
 import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.TransactionRepository;
+import com.example.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -18,25 +20,29 @@ import java.util.Map;
 @Service
 public class AccountService {
 
-
+    private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
-    public AccountService(
+    public AccountService(UserRepository userRepository,
             AccountRepository accountRepository,
-            TransactionRepository transactionRepository) {
+                          TransactionRepository transactionRepository) {
 
+        this.userRepository = userRepository;
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
     }
 
     @Transactional
-    public Account createAccount(String name, BigDecimal balance) {
+    public Account createAccount(int userId, String type, BigDecimal balance) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
         if(balance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Insufficient funds");
+            throw new InsufficientFundsException();
         }
 
-        Account account = new Account(name, balance);
+        Account account = new Account(user, type, balance);
         account = accountRepository.save(account);
 
         //shouldn't be necessary
@@ -45,10 +51,10 @@ public class AccountService {
 
 
         if(balance.compareTo(BigDecimal.ZERO) != 0) {
-            String type = "DEPOSIT";
+            String transactionType = "DEPOSIT";
             LocalDateTime timestamp = LocalDateTime.now();
             Transaction transaction =
-                    new Transaction(account, type, balance, timestamp);
+                    new Transaction(account, transactionType, balance, timestamp);
 
             transactionRepository.save(transaction);
         }
@@ -72,11 +78,11 @@ public class AccountService {
         Account account = getAccount(id);
 
         if(amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Cannot withdraw amount <= $0");
+            throw new InsufficientFundsException();
         }
 
         if(account.getBalance().compareTo(amount) < 0) {
-            throw new IllegalArgumentException("Insufficient funds");
+            throw new InsufficientFundsException();
         }
 
         String type = "WITHDRAWAL";
@@ -97,7 +103,7 @@ public class AccountService {
         Account account = getAccount(id);
 
         if(amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Cannot deposit amount <= $0");
+            throw new InsufficientFundsException();
         }
 
 

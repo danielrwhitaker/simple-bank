@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/accounts")
+@RequestMapping("/api")
 public class AccountController {
 
     private final AccountService accountService;
@@ -22,30 +22,30 @@ public class AccountController {
     }
 
     //Create part of CRUD
-    @PostMapping
-    public Account createAccount(@RequestBody CreateAccountRequest request) {
-        return accountService.createAccount(request.getName(), request.getBalance());
+    @PostMapping("/users/{userId}/accounts")
+    public Account createAccount(@PathVariable int userId, @RequestBody CreateAccountRequest request) {
+        return accountService.createAccount(userId, request.getType(), request.getBalance());
     }
 
     //Update part of CRUD
-    @PostMapping("/{id}/withdraw")
+    @PostMapping("/accounts/{id}/withdraw")
     public Account withdraw(@PathVariable int id, @RequestBody CreateWithdrawRequest request) {
         return accountService.withdraw(id, request.getAmount());
     }
 
-    @PostMapping("/{id}/deposit")
+    @PostMapping("/accounts/{id}/deposit")
     public Account deposit(@PathVariable int id, @RequestBody CreateDepositRequest request) {
         return accountService.deposit(id, request.getAmount());
     }
 
 
     //Read part of CRUD
-    @GetMapping("/{id}")
+    @GetMapping("/accounts/{id}")
     public Account getAccount(@PathVariable int id) {
         return accountService.getAccount(id);
     }
 
-    @GetMapping("/{id}/transactions")
+    @GetMapping("/accounts/{id}/transactions")
     public List<Transaction> getTransaction(@PathVariable int id) {
         return accountService.getTransaction(id);
     }
