@@ -3,6 +3,9 @@ package com.example.backend.service;
 //hash map because no database is used yet
 import com.example.backend.model.Account;
 import com.example.backend.model.Transaction;
+import com.example.backend.repository.AccountRepository;
+import com.example.backend.repository.TransactionRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,56 +17,58 @@ import java.util.Map;
 
 @Service
 public class AccountService {
-    private final Map<Integer, Account> accounts = new HashMap<>();
-    private final Map<Integer, List<Transaction>> transactions = new HashMap<>();
-    private int nextAccountId = 1;
-    private int nextTransactionId = 1;
 
+
+    private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
+
+    public AccountService(
+            AccountRepository accountRepository,
+            TransactionRepository transactionRepository) {
+
+        this.accountRepository = accountRepository;
+        this.transactionRepository = transactionRepository;
+    }
+
+    @Transactional
     public Account createAccount(String name, BigDecimal balance) {
         if(balance.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Insufficient funds");
         }
 
-        int accountId = nextAccountId++;
+        Account account = new Account(name, balance);
+        account = accountRepository.save(account);
 
-        Account account = new Account(accountId, name, balance);
-        accounts.put(account.getId(), account);
+        int accountId = account.getId();
 
-        transactions.put(account.getId(), new ArrayList<>());
+
 
         if(balance.compareTo(BigDecimal.ZERO) != 0) {
-            int transactionId = nextTransactionId++;
             String type = "DEPOSIT";
             LocalDateTime timestamp = LocalDateTime.now();
-            Transaction transaction = new Transaction(transactionId, accountId, type, balance, timestamp);
+            Transaction transaction =
+                    new Transaction(accountId, type, balance, timestamp);
 
-            transactions.get(accountId).addFirst(transaction);
+            transactionRepository.save(transaction);
         }
 
         return account;
     }
 
     public Account getAccount(int id) {
-        Account account = accounts.get(id);
-        if (account == null) {
-            throw new AccountNotFoundException(id);
-        }
-        return account;
+        return accountRepository.findById(id)
+                .orElseThrow(() -> new AccountNotFoundException(id));
     }
 
     public List<Transaction> getTransaction(int id) {
-        if (!accounts.containsKey(id)) {
-            throw new AccountNotFoundException(id);
-        }
-        return transactions.get(id);
+        getAccount(id);
+
+        return transactionRepository.findByAccountIdOrderByTimestampDesc(id);
     }
 
+    @Transactional
     public Account withdraw(int id, BigDecimal amount) {
-        Account account = accounts.get(id);
-
-        if (account == null) {
-            throw new AccountNotFoundException(id);
-        }
+        Account account = getAccount(id);
 
         if(amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Cannot withdraw amount <= $0");
@@ -73,35 +78,37 @@ public class AccountService {
             throw new IllegalArgumentException("Insufficient funds");
         }
 
-        int transactionId = nextTransactionId++;
         String type = "WITHDRAWAL";
         LocalDateTime timestamp = LocalDateTime.now();
-        Transaction transaction = new Transaction(transactionId, id, type, amount, timestamp);
+        Transaction transaction =
+                new Transaction(id, type, amount, timestamp);
 
         account.setBalance(account.getBalance().subtract(amount));
-        transactions.get(id).addFirst(transaction);
+
+        accountRepository.save(account);
+        transactionRepository.save(transaction);
 
         return account;
     }
 
+    @Transactional
     public Account deposit(int id, BigDecimal amount) {
-        Account account = accounts.get(id);
-
-        if (account == null) {
-            throw new AccountNotFoundException(id);
-        }
+        Account account = getAccount(id);
 
         if(amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Cannot deposit amount <= $0");
         }
 
-        int transactionId = nextTransactionId++;
+
         String type = "DEPOSIT";
         LocalDateTime timestamp = LocalDateTime.now();
-        Transaction transaction = new Transaction(transactionId, id, type, amount, timestamp);
+        Transaction transaction =
+                new Transaction(id, type, amount, timestamp);
 
         account.setBalance(account.getBalance().add(amount));
-        transactions.get(id).addFirst(transaction);
+
+        accountRepository.save(account);
+        transactionRepository.save(transaction);
 
         return account;
     }

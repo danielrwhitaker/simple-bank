@@ -3,20 +3,33 @@ package com.example.backend.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name="transactions")
 public class Transaction {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private int accountId;
     private String type;
     private BigDecimal amount;
     private LocalDateTime timestamp;
 
     public Transaction() {
-
     }
 
     public Transaction(int id, int accountId, String type, BigDecimal amount, LocalDateTime timestamp) {
         this.id = id;
+        this.accountId = accountId;
+        this.type = type;
+        this.amount = amount;
+        this.timestamp = timestamp;
+    }
+
+    public Transaction(int accountId, String type, BigDecimal amount, LocalDateTime timestamp) {
         this.accountId = accountId;
         this.type = type;
         this.amount = amount;
