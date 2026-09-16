@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 /*This is the User class, which is defining Users. Belongs above accounts
@@ -34,6 +35,9 @@ public class User {
 
     private String email;
     private LocalDateTime timestamp;
+
+    @JsonIgnore
+    private String passwordHash;
 
     public User() {
     }
@@ -86,6 +90,10 @@ public class User {
         return timestamp;
     }
 
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -96,6 +104,10 @@ public class User {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     @Override
