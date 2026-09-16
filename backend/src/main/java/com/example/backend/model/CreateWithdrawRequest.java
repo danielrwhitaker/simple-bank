@@ -1,9 +1,11 @@
 package com.example.backend.model;
 
+import java.math.BigDecimal;
+
 public class CreateWithdrawRequest {
 
     private int id;
-    private double amount;
+    private BigDecimal amount;
 
     public CreateWithdrawRequest() {
     }
@@ -12,11 +14,11 @@ public class CreateWithdrawRequest {
         return id;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 }

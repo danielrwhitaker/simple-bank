@@ -1,14 +1,17 @@
 package com.example.backend.model;
+
+import java.math.BigDecimal;
+
 //This is the Account class, which is defining Accounts to be built in accountservice
 public class Account {
     private int id;
     private String name;
-    private double balance;
+    private BigDecimal balance;
 
     public Account() {
     }
 
-    public Account(int id, String name, double balance) {
+    public Account(int id, String name, BigDecimal balance) {
         this.id = id;
         this.name = name;
         this.balance = balance;
@@ -22,7 +25,7 @@ public class Account {
         return name;
     }
 
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
@@ -30,7 +33,7 @@ public class Account {
         this.name = name;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 

@@ -1,9 +1,11 @@
 package com.example.backend.model;
 
+import java.math.BigDecimal;
+
 public class CreateAccountRequest {
 
     private String name;
-    private double balance;
+    private BigDecimal balance;
 
     public CreateAccountRequest() {
     }
@@ -12,7 +14,7 @@ public class CreateAccountRequest {
         return name;
     }
 
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
@@ -20,7 +22,7 @@ public class CreateAccountRequest {
         this.name = name;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 }
