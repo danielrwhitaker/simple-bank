@@ -1,6 +1,8 @@
 package com.example.backend.service;
 //this AccountService is used to create Accounts with a hashmap
 //hash map because no database is used yet
+import com.example.backend.dto.RegistrationRequest;
+import com.example.backend.dto.UserResponse;
 import com.example.backend.model.UpdateUserRequest;
 import com.example.backend.model.User;
 import com.example.backend.model.Account;
@@ -9,6 +11,7 @@ import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.TransactionRepository;
 import com.example.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,24 +27,37 @@ public class UserService {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
+    private final PasswordEncoder passwordEncoder;
+
 
     public UserService(
             UserRepository userRepository,
             AccountRepository accountRepository,
-            TransactionRepository transactionRepository) {
+            TransactionRepository transactionRepository,
+            PasswordEncoder passwordEncoder) {
 
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public User createUser(String name, String email) {
+    public UserResponse createUser(RegistrationRequest request) {
 
         LocalDateTime timestamp = LocalDateTime.now();
-        User user = new User(name, email, timestamp);
+
+        User user = new User(request.getName(), request.getEmail(), timestamp);
+
+        String passwordHash = passwordEncoder.encode(request.getPassword());
+        user.setPasswordHash(passwordHash);
+
         user = userRepository.save(user);
 
-        return user;
+        return new UserResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
+        );
     }
 
     public User getUser(int id) {

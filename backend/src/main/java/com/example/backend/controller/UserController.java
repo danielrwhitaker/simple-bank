@@ -1,7 +1,10 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.RegistrationRequest;
+import com.example.backend.dto.UserResponse;
 import com.example.backend.model.*;
 import com.example.backend.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +22,8 @@ public class UserController {
 
     //Create part of CRUD
     @PostMapping
-    public User createUser(@RequestBody CreateUserRequest request) {
-        return userService.createUser(request.getName(), request.getEmail());
+    public UserResponse createUser(@Valid @RequestBody RegistrationRequest request) {
+        return userService.createUser(request);
     }
 
     //Read part of CRUD
