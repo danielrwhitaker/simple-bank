@@ -8,7 +8,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
 
     private final UserService userService;
@@ -36,3 +35,4 @@ public class UserController {
         return userService.updateUser(id, request);
     }
 }
+
