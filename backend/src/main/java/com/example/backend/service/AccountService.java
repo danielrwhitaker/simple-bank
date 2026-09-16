@@ -39,7 +39,8 @@ public class AccountService {
         Account account = new Account(name, balance);
         account = accountRepository.save(account);
 
-        int accountId = account.getId();
+        //shouldn't be necessary
+        //int accountId = account.getId();
 
 
 
@@ -47,7 +48,7 @@ public class AccountService {
             String type = "DEPOSIT";
             LocalDateTime timestamp = LocalDateTime.now();
             Transaction transaction =
-                    new Transaction(accountId, type, balance, timestamp);
+                    new Transaction(account, type, balance, timestamp);
 
             transactionRepository.save(transaction);
         }
@@ -81,7 +82,7 @@ public class AccountService {
         String type = "WITHDRAWAL";
         LocalDateTime timestamp = LocalDateTime.now();
         Transaction transaction =
-                new Transaction(id, type, amount, timestamp);
+                new Transaction(account, type, amount, timestamp);
 
         account.setBalance(account.getBalance().subtract(amount));
 
@@ -103,7 +104,7 @@ public class AccountService {
         String type = "DEPOSIT";
         LocalDateTime timestamp = LocalDateTime.now();
         Transaction transaction =
-                new Transaction(id, type, amount, timestamp);
+                new Transaction(account, type, amount, timestamp);
 
         account.setBalance(account.getBalance().add(amount));
 

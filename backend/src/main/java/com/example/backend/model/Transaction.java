@@ -13,7 +13,9 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private int accountId;
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
     private String type;
     private BigDecimal amount;
     private LocalDateTime timestamp;
@@ -21,16 +23,17 @@ public class Transaction {
     public Transaction() {
     }
 
-    public Transaction(int id, int accountId, String type, BigDecimal amount, LocalDateTime timestamp) {
+    //should not need this, but keeping in case
+    /*public Transaction(int id, Account account, String type, BigDecimal amount, LocalDateTime timestamp) {
         this.id = id;
-        this.accountId = accountId;
+        this.account = account;
         this.type = type;
         this.amount = amount;
         this.timestamp = timestamp;
-    }
+    }*/
 
-    public Transaction(int accountId, String type, BigDecimal amount, LocalDateTime timestamp) {
-        this.accountId = accountId;
+    public Transaction(Account account, String type, BigDecimal amount, LocalDateTime timestamp) {
+        this.account = account;
         this.type = type;
         this.amount = amount;
         this.timestamp = timestamp;
@@ -40,8 +43,8 @@ public class Transaction {
         return id;
     }
 
-    public int getAccountId() {
-        return accountId;
+    public Account getAccount() {
+        return account;
     }
 
     public String getType() {
@@ -70,6 +73,6 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction [id=" + id + ", account id=" + accountId + ", type=" + type + ", amount=" + amount + ", timestamp=" + timestamp + "]";
+        return "Transaction [id=" + id + ", account id=" + account.getId() + ", type=" + type + ", amount=" + amount + ", timestamp=" + timestamp + "]";
     }
 }
