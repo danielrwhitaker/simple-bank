@@ -1,6 +1,7 @@
 package com.example.backend.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -21,6 +22,7 @@ public class Account {
 
     private String type;
     private BigDecimal balance;
+    private LocalDateTime createdAt;
 
     public Account() {
     }
@@ -37,6 +39,7 @@ public class Account {
         this.user = user;
         this.type = type;
         this.balance = balance;
+        this.createdAt = LocalDateTime.now();
     }
     /*
     public Account(String name, String type, BigDecimal balance) {
@@ -57,6 +60,14 @@ public class Account {
 
     public BigDecimal getBalance() {
         return balance;
+    }
+
+    public String getUserName() {
+        return user.getName();
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
     
     public void setType(String type) {

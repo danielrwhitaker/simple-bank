@@ -43,6 +43,7 @@ function ViewAccountPage() {
                     <h2 id="account-summary-heading">Account summary</h2>
                     <dl>
                         <div><dt>Account ID</dt><dd>{account.id}</dd></div>
+                        <div><dt>User Name</dt><dd>{account.userName}</dd></div>
                         <div><dt>Type</dt><dd>{account.type}</dd></div>
                         <div><dt>Balance</dt><dd>{account.balance}</dd></div>
                     </dl>

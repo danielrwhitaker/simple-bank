@@ -55,6 +55,7 @@ function TransactionHistoryPage() {
                         <caption>Transactions, newest first</caption>
                         <thead>
                             <tr>
+                                <th scope="col">Transaction ID</th>
                                 <th scope="col">Type</th>
                                 <th scope="col">Amount</th>
                                 <th scope="col">Timestamp</th>
@@ -63,6 +64,7 @@ function TransactionHistoryPage() {
                         <tbody>
                             {transactions.map((transaction) => (
                                 <tr key={transaction.id}>
+                                    <td>{transaction.id}</td>
                                     <td>{transaction.type}</td>
                                     <td>{transaction.amount}</td>
                                     <td>{formatTimestamp(transaction.timestamp)}</td>

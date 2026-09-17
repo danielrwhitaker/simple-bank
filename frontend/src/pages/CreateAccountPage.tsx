@@ -31,13 +31,30 @@ function CreateAccountPage() {
             }
 
             const user = await userResponse.json() as { id: number }
-            const accountResponse = await fetch(`/api/users/${user.id}/accounts`, {
+            const loginResponse = await fetch('/api/users/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                body: JSON.stringify({ email, password })
+            })
+
+            if (!loginResponse.ok) {
+                throw new Error(`Unable to sign in (${loginResponse.status})`)
+            }
+
+            const { token } = await loginResponse.json() as { token: string }
+            localStorage.setItem('token', token)
+
+            const accountResponse = await fetch('/api/accounts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
                 body: JSON.stringify({
-                    type,
+                    userId: user.id,
+                    accountType: type,
                     balance: Number(balance)
                 })
             })

@@ -1,7 +1,9 @@
 export type Account = {
     id: number
+    userName: string
     type: string
     balance: number | string
+    createdAt: string
 }
 
 export type Transaction = {

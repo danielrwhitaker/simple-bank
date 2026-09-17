@@ -7,7 +7,10 @@ import com.example.backend.model.CreateWithdrawRequest;
 import com.example.backend.model.CreateDepositRequest;
 import com.example.backend.service.AccountService;
 import com.example.backend.service.JwtService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -25,9 +28,20 @@ public class AccountController {
     }
 
     //Create part of CRUD
-    @PostMapping("/users/{userId}/accounts")
-    public Account createAccount(@PathVariable int userId, @RequestBody CreateAccountRequest request) {
-        return accountService.createAccount(userId, request.getType(), request.getBalance());
+    @PostMapping("/accounts")
+    public Account createAccount(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @Valid @RequestBody CreateAccountRequest request) {
+
+        int userId = jwtService.extractUserIdFromHeader(authorizationHeader);
+        if (request.getUserId() != userId) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Cannot create an account for another user"
+            );
+        }
+
+        return accountService.createAccount(userId, request.getAccountType(), request.getBalance());
     }
 
     //Update part of CRUD

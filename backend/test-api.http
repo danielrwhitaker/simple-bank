@@ -1,5 +1,31 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=IntelliJ IDEA
+@baseUrl = http://localhost:8080
+@email = simple.bank@example.com
+@password = TestPassword123!
+@accountId = 1
+
+### Register
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "name": "Simple Bank User",
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### Login
+POST {{baseUrl}}/api/users/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+> {% client.global.set("token", response.body.token); %}
+
+### Get account
+GET {{baseUrl}}/api/accounts/{{accountId}}
+Authorization: Bearer {{token}}
 
 ###

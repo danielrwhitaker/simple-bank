@@ -1,0 +1,137 @@
+{
+  "info": {
+    "name": "Simple Bank",
+    "description": "Authenticated end-to-end requests for the Simple Bank REST API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "email", "value": "" },
+    { "key": "password", "value": "TestPassword123!" },
+    { "key": "userId", "value": "" },
+    { "key": "token", "value": "" },
+    { "key": "accountId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1 Register User",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.collectionVariables.set('email', `simple.bank.${Date.now()}@example.com`);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Created', () => pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('userId', pm.response.json().id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Test User\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": "{{baseUrl}}/api/users"
+      }
+    },
+    {
+      "name": "2 Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Authenticated', () => pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('token', pm.response.json().token);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": "{{baseUrl}}/api/users/login"
+      }
+    },
+    {
+      "name": "3 Create Account",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Created account', () => pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('accountId', pm.response.json().id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": {{userId}},\n  \"accountType\": \"CHECKING\",\n  \"balance\": 100.00\n}"
+        },
+        "url": "{{baseUrl}}/api/accounts"
+      }
+    },
+    {
+      "name": "4 Get Account",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}"
+      }
+    },
+    {
+      "name": "5 Deposit",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"amount\": 25.00\n}" },
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}/deposit"
+      }
+    },
+    {
+      "name": "6 Withdraw",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"amount\": 10.00\n}" },
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}/withdraw"
+      }
+    },
+    {
+      "name": "7 Transaction History",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}/transactions"
+      }
+    }
+  ]
+}
