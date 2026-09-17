@@ -6,6 +6,7 @@ import com.example.backend.model.CreateAccountRequest;
 import com.example.backend.model.CreateWithdrawRequest;
 import com.example.backend.model.CreateDepositRequest;
 import com.example.backend.service.AccountService;
+import com.example.backend.service.JwtService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,10 +16,12 @@ import java.util.List;
 public class AccountController {
 
     private final AccountService accountService;
+    private final JwtService jwtService;
 
 
-    public AccountController(AccountService accountService) {
+    public AccountController(AccountService accountService, JwtService jwtService) {
         this.accountService = accountService;
+        this.jwtService = jwtService;
     }
 
     //Create part of CRUD
@@ -29,24 +32,45 @@ public class AccountController {
 
     //Update part of CRUD
     @PostMapping("/accounts/{id}/withdraw")
-    public Account withdraw(@PathVariable int id, @RequestBody CreateWithdrawRequest request) {
-        return accountService.withdraw(id, request.getAmount());
+    public Account withdraw(@PathVariable int id, @RequestHeader(value = "Authorization", required = false)
+    String authorizationHeader, @RequestBody CreateWithdrawRequest request) {
+
+        int userId = jwtService.extractUserIdFromHeader(authorizationHeader);
+        return accountService.withdraw(
+                id,
+                userId,
+                request.getAmount()
+        );
     }
 
     @PostMapping("/accounts/{id}/deposit")
-    public Account deposit(@PathVariable int id, @RequestBody CreateDepositRequest request) {
-        return accountService.deposit(id, request.getAmount());
+    public Account deposit(@PathVariable int id, @RequestHeader(value = "Authorization", required = false)
+    String authorizationHeader, @RequestBody CreateDepositRequest request) {
+        int userId = jwtService.extractUserIdFromHeader(authorizationHeader);
+
+        return accountService.deposit(
+                id,
+                userId,
+                request.getAmount()
+        );
     }
 
 
     //Read part of CRUD
     @GetMapping("/accounts/{id}")
-    public Account getAccount(@PathVariable int id) {
-        return accountService.getAccount(id);
+    public Account getAccount(@PathVariable int id, @RequestHeader(value = "Authorization", required = false)
+    String authorizationHeader) {
+
+        int userId = jwtService.extractUserIdFromHeader(authorizationHeader);
+        return accountService.getOwnedAccount(id, userId);
     }
 
     @GetMapping("/accounts/{id}/transactions")
-    public List<Transaction> getTransaction(@PathVariable int id) {
-        return accountService.getTransaction(id);
+    public List<Transaction> getTransaction(@PathVariable int id, @RequestHeader(value = "Authorization", required = false)
+    String authorizationHeader) {
+        int userId =
+                jwtService.extractUserIdFromHeader(authorizationHeader);
+
+        return accountService.getTransaction(id, userId);
     }
 }

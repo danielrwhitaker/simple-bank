@@ -8,7 +8,9 @@ import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.TransactionRepository;
 import com.example.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -31,6 +33,18 @@ public class AccountService {
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
+    }
+
+    public Account getOwnedAccount(int accountId, int userId) {
+        Account account =  getAccount(accountId);
+        if(account.getUser().getId() != userId) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Account not found"
+            );
+        }
+
+        return account;
     }
 
     @Transactional
@@ -67,15 +81,15 @@ public class AccountService {
                 .orElseThrow(() -> new AccountNotFoundException(id));
     }
 
-    public List<Transaction> getTransaction(int id) {
-        getAccount(id);
+    public List<Transaction> getTransaction(int id, int userId) {
+        getOwnedAccount(id, userId);
 
         return transactionRepository.findByAccountIdOrderByTimestampDesc(id);
     }
 
     @Transactional
-    public Account withdraw(int id, BigDecimal amount) {
-        Account account = getAccount(id);
+    public Account withdraw(int id, int userId, BigDecimal amount) {
+        Account account = getOwnedAccount(id, userId);
 
         if(amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new InsufficientFundsException();
@@ -99,8 +113,8 @@ public class AccountService {
     }
 
     @Transactional
-    public Account deposit(int id, BigDecimal amount) {
-        Account account = getAccount(id);
+    public Account deposit(int id, int userId, BigDecimal amount) {
+        Account account = getOwnedAccount(id, userId);
 
         if(amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new InsufficientFundsException();

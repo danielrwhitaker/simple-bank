@@ -1,8 +1,11 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.LoginRequest;
+import com.example.backend.dto.LoginResponse;
 import com.example.backend.dto.RegistrationRequest;
 import com.example.backend.dto.UserResponse;
 import com.example.backend.model.*;
+import com.example.backend.service.JwtService;
 import com.example.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +17,24 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final JwtService jwtService;
 
+// had to remove for JwtService to work
+//    public UserController(UserService userService) {
+//        this.userService = userService;
+//    }
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtService jwtService) {
         this.userService = userService;
+        this.jwtService = jwtService;
+    }
+
+    @PostMapping("/login")
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
+        User user = userService.authenticate(request);
+        String token = jwtService.generateToken(user);
+
+        return new LoginResponse(token);
     }
 
     //Create part of CRUD

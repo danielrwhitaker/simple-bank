@@ -18,12 +18,14 @@ export type AmountRequest = {
 const apiRoot = '/api/accounts'
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
+    const token = localStorage.getItem('token')
     const response = await fetch(url, {
+        ...options,
         headers: {
             'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...options?.headers,
         },
-        ...options,
     })
 
     if (!response.ok) {

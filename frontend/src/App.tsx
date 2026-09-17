@@ -5,11 +5,13 @@ import ViewAccountPage from './pages/ViewAccountPage'
 import DepositPage from './pages/DepositPage'
 import WithdrawPage from './pages/WithdrawPage'
 import TransactionHistoryPage from './pages/TransactionHistoryPage'
+import LoginPage from './pages/LoginPage'
 
 function App() {
     return (
         <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/create-account" element={<CreateAccountPage />} />
             <Route path="/accounts/:accountId" element={<ViewAccountPage />} />
             <Route path="/accounts/:accountId/deposit" element={<DepositPage />} />
