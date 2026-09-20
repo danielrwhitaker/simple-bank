@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 
+const API_URL = import.meta.env.VITE_API_URL
+
 type LoginResponse = {
     token: string
 }
@@ -18,7 +20,7 @@ function LoginPage() {
         setIsSubmitting(true)
 
         try {
-            const response = await fetch('/api/users/login', {
+            const response = await fetch(`${API_URL}/api/users/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),

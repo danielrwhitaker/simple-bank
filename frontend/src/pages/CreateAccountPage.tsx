@@ -1,6 +1,8 @@
 import { useState, type SyntheticEvent } from 'react'
 import { Link } from 'react-router'
 
+const API_URL = import.meta.env.VITE_API_URL
+
 function CreateAccountPage() {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
@@ -18,7 +20,7 @@ function CreateAccountPage() {
         setIsSubmitting(true)
 
         try {
-            const userResponse = await fetch('/api/users', {
+            const userResponse = await fetch(`${API_URL}/api/users`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -31,7 +33,7 @@ function CreateAccountPage() {
             }
 
             const user = await userResponse.json() as { id: number }
-            const loginResponse = await fetch('/api/users/login', {
+            const loginResponse = await fetch(`${API_URL}/api/users/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -46,7 +48,7 @@ function CreateAccountPage() {
             const { token } = await loginResponse.json() as { token: string }
             localStorage.setItem('token', token)
 
-            const accountResponse = await fetch('/api/accounts', {
+            const accountResponse = await fetch(`${API_URL}/api/accounts`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

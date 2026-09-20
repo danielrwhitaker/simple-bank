@@ -17,7 +17,8 @@ export type AmountRequest = {
     amount: number
 }
 
-const apiRoot = '/api/accounts'
+const API_URL = import.meta.env.VITE_API_URL
+const apiRoot = `${API_URL}/api/accounts`
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
     const token = localStorage.getItem('token')
