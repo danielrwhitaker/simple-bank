@@ -47,7 +47,7 @@ public class AccountController {
     //Update part of CRUD
     @PostMapping("/accounts/{id}/withdraw")
     public Account withdraw(@PathVariable int id, @RequestHeader(value = "Authorization", required = false)
-    String authorizationHeader, @RequestBody CreateWithdrawRequest request) {
+    String authorizationHeader, @Valid @RequestBody CreateWithdrawRequest request) {
 
         int userId = jwtService.extractUserIdFromHeader(authorizationHeader);
         return accountService.withdraw(
@@ -59,7 +59,7 @@ public class AccountController {
 
     @PostMapping("/accounts/{id}/deposit")
     public Account deposit(@PathVariable int id, @RequestHeader(value = "Authorization", required = false)
-    String authorizationHeader, @RequestBody CreateDepositRequest request) {
+    String authorizationHeader, @Valid @RequestBody CreateDepositRequest request) {
         int userId = jwtService.extractUserIdFromHeader(authorizationHeader);
 
         return accountService.deposit(

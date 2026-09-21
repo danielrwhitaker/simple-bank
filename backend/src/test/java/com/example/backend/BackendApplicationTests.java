@@ -32,8 +32,8 @@ class BackendApplicationTests {
                         .header("Access-Control-Request-Method", "POST")
                         .header("Access-Control-Request-Headers", "content-type"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Access-Control-Allow-Origin", "*"))
-                .andExpect(header().string("Access-Control-Allow-Methods", "GET,POST,OPTIONS"))
+                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:5173"))
+                .andExpect(header().string("Access-Control-Allow-Methods", "GET,POST,PATCH,OPTIONS"))
                 .andExpect(header().string("Access-Control-Allow-Headers", "content-type"));
     }
 

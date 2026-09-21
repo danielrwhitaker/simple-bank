@@ -1,9 +1,14 @@
 package com.example.backend.model;
 
-import java.math.BigDecimal;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 
 public class UpdateUserRequest {
+    @Size(min = 1, max = 100)
     private String name;
+
+    @Email
+    @Size(min = 1, max = 100)
     private String email;
 
     public UpdateUserRequest() {

@@ -21,8 +21,10 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("*")
-                        .allowedMethods("GET", "POST", "OPTIONS")
+                        .allowedOrigins(
+                                "https://d24qq15c0l36zb.cloudfront.net",
+                                "http://localhost:5173")
+                        .allowedMethods("GET", "POST", "PATCH", "OPTIONS")
                         .allowedHeaders("*");
             }
         };

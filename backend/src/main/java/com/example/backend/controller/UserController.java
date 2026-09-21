@@ -4,13 +4,13 @@ import com.example.backend.dto.LoginRequest;
 import com.example.backend.dto.LoginResponse;
 import com.example.backend.dto.RegistrationRequest;
 import com.example.backend.dto.UserResponse;
-import com.example.backend.model.*;
+import com.example.backend.model.UpdateUserRequest;
+import com.example.backend.model.User;
 import com.example.backend.service.JwtService;
+import com.example.backend.service.UserNotFoundException;
 import com.example.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -18,11 +18,6 @@ public class UserController {
 
     private final UserService userService;
     private final JwtService jwtService;
-
-// had to remove for JwtService to work
-//    public UserController(UserService userService) {
-//        this.userService = userService;
-//    }
 
     public UserController(UserService userService, JwtService jwtService) {
         this.userService = userService;
@@ -45,14 +40,27 @@ public class UserController {
 
     //Read part of CRUD
     @GetMapping("/{id}")
-    public User getUser(@PathVariable int id) {
+    public UserResponse getUser(
+            @PathVariable int id,
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+        requireCurrentUser(id, authorizationHeader);
         return userService.getUser(id);
     }
 
     //Update part of CRUD
     @PatchMapping("/{id}")
-    public User updateUser(@PathVariable int id, @RequestBody UpdateUserRequest request) {
+    public UserResponse updateUser(
+            @PathVariable int id,
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @Valid @RequestBody UpdateUserRequest request) {
+        requireCurrentUser(id, authorizationHeader);
         return userService.updateUser(id, request);
+    }
+
+    private void requireCurrentUser(int id, String authorizationHeader) {
+        if (jwtService.extractUserIdFromHeader(authorizationHeader) != id) {
+            throw new UserNotFoundException(id);
+        }
     }
 }
 

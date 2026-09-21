@@ -81,12 +81,14 @@ public class UserService {
         );
     }
 
-    public User getUser(int id) {
-        return userRepository.findById(id)
+    public UserResponse getUser(int id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
+
+        return toResponse(user);
     }
 
-    public User updateUser(int id, UpdateUserRequest request) {
+    public UserResponse updateUser(int id, UpdateUserRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
@@ -98,7 +100,11 @@ public class UserService {
             user.setEmail(request.getEmail());
         }
 
-        return userRepository.save(user);
+        return toResponse(userRepository.save(user));
+    }
+
+    private UserResponse toResponse(User user) {
+        return new UserResponse(user.getId(), user.getName(), user.getEmail());
     }
 
     public void deleteUser(int id) {
