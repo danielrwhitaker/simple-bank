@@ -1,26 +1,37 @@
 # Simple Bank
 
-A Spring Boot and React banking application for creating accounts, viewing balances, depositing and withdrawing money, and reviewing transaction history.
+A full-stack banking demo built with Spring Boot, React, and PostgreSQL. Users can register, sign in, create an account, view its balance, deposit or withdraw money, and review transaction history.
 
-## Requirements
+## Live application
 
-- Java 25
-- Node.js and npm
-- PostgreSQL database
-- `SUPABASE_DB_URL` environment variable containing the JDBC connection URL
-- `JWT_SECRET` environment variable containing a Base64-encoded 256-bit secret
+[Open Simple Bank on AWS](https://d24qq15c0l36zb.cloudfront.net/)
 
-## Run the backend
+The React frontend is hosted through Amazon S3 and CloudFront. The Spring Boot API runs on AWS Lambda behind API Gateway.
+
+## Stack
+
+- Java 25, Spring Boot, and Gradle
+- React, TypeScript, and Vite
+- PostgreSQL
+- JWT authentication with BCrypt password hashing
+- AWS S3, CloudFront, API Gateway, and Lambda
+
+## Run locally
+
+Set these backend environment variables:
+
+- `SUPABASE_DB_URL`
+- `SUPABASE_DB_USERNAME`
+- `SUPABASE_DB_PASSWORD`
+- `JWT_SECRET` — Base64-encoded 256-bit secret
+
+Set `VITE_API_URL=http://localhost:8080` in `frontend/.env`.
 
 ```powershell
 cd backend
 .\gradlew.bat bootRun
-```
 
-## Run the frontend
-
-```powershell
-cd frontend
+cd ..\frontend
 npm install
 npm run dev
 ```
@@ -40,18 +51,11 @@ npm run lint
 
 ## API workflow
 
-1. `POST /api/users` registers a user.
-2. `POST /api/users/login` returns a JWT.
-3. `POST /api/accounts` creates an account for the authenticated user.
-4. `GET /api/accounts/{id}` returns an owned account.
-5. `POST /api/accounts/{id}/deposit` deposits money.
-6. `POST /api/accounts/{id}/withdraw` withdraws money.
-7. `GET /api/accounts/{id}/transactions` returns transaction history.
+1. Register with `POST /api/users`.
+2. Sign in with `POST /api/users/login` to receive a JWT.
+3. Create an account with `POST /api/accounts`.
+4. View an account with `GET /api/accounts/{id}`.
+5. Deposit or withdraw with `POST /api/accounts/{id}/deposit` or `/withdraw`.
+6. View history with `GET /api/accounts/{id}/transactions`.
 
 Protected requests require `Authorization: Bearer <token>`.
-
-## Submission files
-
-- PostgreSQL schema: `database/schema.sql`
-- Postman collection: `postman/Simple Bank.postman_collection.json`
-- UI screenshots: `screenshots/`
